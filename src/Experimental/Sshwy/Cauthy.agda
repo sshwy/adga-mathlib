@@ -6,8 +6,7 @@ open import Data.Nat using (ℕ; zero; suc) renaming (_<_ to _<ⁿ_)
 open import Data.Nat.Properties as ℕ
 
 open import Data.Rational using (ℚ; 0ℚ; _<_; _-_; ∣_∣; Positive)
-open import Data.Rational.Properties as ℚ
-  using (+-inverseʳ; positive⁻¹)
+import Data.Rational.Properties as ℚ
 
 open import Data.Product using (∃; Σ; Σ-syntax; _,_)
 
@@ -22,78 +21,63 @@ open import Stream
 open import Stream.Properties using (f=S; sub-take; n≤mono; aᵢ<aᵢ₊₁⇒mono<)
 open Stream.Stream
 
--- define cauthy convergence
-data ε-N-Converge {ε : ℚ} (ε-pos : Positive ε) (N : ℕ) (x : Stream ℚ) : Set
-  where
-  ε-n-converge : 
-    (∀ (n m : ℕ) 
-      → N <ⁿ n 
-      → N <ⁿ m 
-      -------------------------
-      → ∣ take m x - take n x ∣ < ε) 
-    → ε-N-Converge {ε} ε-pos N x
-
--- converge under ε
-data ε-Converge {ε : ℚ} (ε-pos : Positive ε) (x : Stream ℚ) : Set where
-  ε-converge : Σ[ N ∈ ℕ ] ε-N-Converge {ε} ε-pos N x
-               -------------------------------------
-               → ε-Converge {ε} ε-pos x
+-- define cauthy convergence under ε
+record ε-Converge {ε : ℚ} (ε-pos : Positive ε) (x : Stream ℚ) : Set where
+  constructor mkConv
+  field
+    N : ℕ
+    isConv : ∀ (n m : ℕ) → N <ⁿ n → N <ⁿ m → ∣ take m x - take n x ∣ < ε
 
 -- define cauthy sequence
 data Cauthy (x : Stream ℚ) : Set where
-  cauthy : 
-    (∀ {ε : ℚ} (ε-pos : Positive ε) → ε-Converge {ε} ε-pos x)
-     → Cauthy x
+  cauthy : (∀ {ε : ℚ} (ε-pos : Positive ε) → ε-Converge {ε} ε-pos x)
+           → Cauthy x
 
 ≡⇒0 : {x y : ℚ} → x ≡ y → x - y ≡ 0ℚ
-≡⇒0 {x} {y} x=y = trans (cong (_- y) x=y) (+-inverseʳ y)
+≡⇒0 {x} {y} x=y = trans (cong (_- y) x=y) (ℚ.+-inverseʳ y)
 
 ℚ-Converge : {ε : ℚ} (ε-pos : Positive ε) (x : ℚ)
-  → ε-N-Converge {ε} ε-pos zero (repeat x)
-ℚ-Converge {ε} ε-pos x = ε-n-converge prop where
-  open ℚ.≤-Reasoning
-  prop : (n m : ℕ)
+  → (n m : ℕ)
     → zero <ⁿ n
     → zero <ⁿ m
     ---------------
     → ∣ take m (repeat x) - take n (repeat x) ∣ < ε
-  prop n m N<n N<m =
-    begin-strict
-      ∣ xₘ - xₙ ∣
-    ≡⟨ cong ∣_∣ (≡⇒0 (begin-equality
-                       xₘ ≡⟨ f=S (const x) m ⟩
-                       x  ≡˘⟨ f=S (const x) n ⟩
-                       xₙ ∎)) ⟩
-      0ℚ
-    <⟨ positive⁻¹ ε-pos ⟩
-      ε
-    ∎
-    where
-    xₘ = take m (repeat x)
-    xₙ = take n (repeat x) 
+ℚ-Converge {ε} ε-pos x n m N<n N<m =
+  begin-strict
+  ∣ xₘ - xₙ ∣ ≡⟨ cong ∣_∣ (≡⇒0
+      (begin-equality
+         xₘ ≡⟨ f=S (const x) m ⟩
+         x  ≡˘⟨ f=S (const x) n ⟩
+         xₙ ∎)) ⟩
+  0ℚ <⟨ ℚ.positive⁻¹ ε-pos ⟩
+  ε  ∎
+  where
+  open ℚ.≤-Reasoning
+  xₘ = take m (repeat x)
+  xₙ = take n (repeat x) 
 
 -- define cauthy sequence converging to ℚ
 ℚ-Cauthy : (x : ℚ) → Cauthy (repeat x)
-ℚ-Cauthy x = cauthy (λ ε-pos → ε-converge (zero , ℚ-Converge ε-pos x))
+ℚ-Cauthy x = cauthy (λ ε-pos → mkConv zero (ℚ-Converge ε-pos x))
 
 getN : {ε : ℚ} {ε-pos : Positive ε} {x : Stream ℚ}
   → ε-Converge {ε} ε-pos x → ℕ
-getN (ε-converge (fst , snd)) = fst
+getN (mkConv fst  snd) = fst
 
 getProp : {ε : ℚ} {ε-pos : Positive ε} {x : Stream ℚ}
   → (conv : ε-Converge {ε} ε-pos x)
   ---------------------------------------------------
   → ∀ (n m : ℕ) → (getN conv) <ⁿ n → (getN conv) <ⁿ m
   → ∣ take m x - take n x ∣ < ε
-getProp {ε} {ε-pos} {x} (ε-converge (fst , ε-n-converge p)) = p
+getProp {ε} {ε-pos} {x} (mkConv fst  p) = p
 
-sub-converge : {x : Stream ℚ} (picker : Picker)
-               ----------------------------------
-               → Cauthy x → Cauthy (sub picker x)
-sub-converge {x} p (cauthy x-conv) = cauthy (λ {ε} → lemma {ε}) where
-  lemma : {ε : ℚ} (ε-pos : Positive ε) →
-    ε-Converge ε-pos (sub p x)
-  lemma {ε} ε-pos = ε-converge (N , ε-n-converge lemma2) where
+-- the subseq. of a cauthy seq. is still a cauthy seq. 
+sub-conv : {x : Stream ℚ} (p : Picker)
+           ----------------------------------
+           → Cauthy x → Cauthy (sub p x)
+sub-conv {x} p (cauthy x-conv) = cauthy (λ {ε} → lemma {ε}) where
+  lemma : {ε : ℚ} (ε-pos : Positive ε) → ε-Converge ε-pos (sub p x)
+  lemma {ε} ε-pos = mkConv N lemma2 where
     N₁ = getN (x-conv {ε} ε-pos) 
     f = Picker.map p
     N = f N₁
@@ -127,7 +111,7 @@ sub-converge {x} p (cauthy x-conv) = cauthy (λ {ε} → lemma {ε}) where
               f m  ∎ where open ℕ.≤-Reasoning
       N₁<pn : N₁ <ⁿ f n
       N₁<pn = begin-strict
-              N₁    ≤⟨ n≤mono p N₁ ⟩
+              N₁   ≤⟨ n≤mono p N₁ ⟩
               N    ≤⟨ n≤mono p N ⟩
               f N  <⟨ aᵢ<aᵢ₊₁⇒mono< p N n N<n ⟩
               f n  ∎ where open ℕ.≤-Reasoning

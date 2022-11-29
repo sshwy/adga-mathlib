@@ -39,7 +39,7 @@ takeℝ n (isCauthy as x) = take n as
 0ℝ : ℝ
 0ℝ = ℚ→ℝ 0ℚ
 
-module ℚ-lemma where
+module ℚ-lem where
   open import Data.Rational using (_+_; _-_; -_)
   open ℚ-prop
   open ℚ-prop.≤-Reasoning
@@ -62,9 +62,6 @@ module ℚ-lemma where
       (a - c) + (b - d)
     ∎
 
-
-open ℚ-lemma public
-
 _+_ : ℝ → ℝ → ℝ
 isCauthy as (cauthy a-conv) + isCauthy bs (cauthy b-conv) =
   isCauthy cs (cauthy λ {e} → cs-conv {e}) where
@@ -80,7 +77,7 @@ isCauthy as (cauthy a-conv) + isCauthy bs (cauthy b-conv) =
   cₙ=aₙ+bₙ = zipWith-take ℚ._+_ as bs cs (_≡S_.eqS (λ n → refl))
 
   cs-conv : {ε : ℚ} (ε-pos : Positive ε) → ε-Converge ε-pos cs
-  cs-conv {ε} ε-pos = ε-converge (N , ε-n-converge lemma) where
+  cs-conv {ε} ε-pos = converge (N , lemma) where
 
     ε>0 : 0ℚ < ε
     ε>0 = ℚ-prop.positive⁻¹ ε-pos
@@ -107,7 +104,7 @@ isCauthy as (cauthy a-conv) + isCauthy bs (cauthy b-conv) =
                      aₘ ℚ.+ bₘ - cₙ
                    ≡⟨ cong (λ x → aₘ ℚ.+ bₘ - x) (cₙ=aₙ+bₙ n) ⟩
                      aₘ ℚ.+ bₘ - (aₙ ℚ.+ bₙ)
-                   ≡⟨ lemma-abcd aₘ bₘ aₙ bₙ ⟩
+                   ≡⟨ ℚ-lem.lemma-abcd aₘ bₘ aₙ bₙ ⟩
                      (aₘ - aₙ) ℚ.+ (bₘ - bₙ)
                    ∎) ⟩
         ∣ (aₘ - aₙ) ℚ.+ (bₘ - bₙ) ∣
