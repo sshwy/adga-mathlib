@@ -84,10 +84,10 @@ zipWith-take f as bs cs p (suc n) =
   zipWith-take f (tl as) (tl bs) (tl cs)
     (≡S-trans (≡S-tl p) (zipWith-tl f as bs cs)) n
  
-sub-take : {A : Set} (p@(f ‼ _) : Picker) (x : Stream A)
+sub-take : {A : Set} (p@(f , _) : Picker) (x : Stream A)
            -------------------------------------------
            → ∀ (n : ℕ) → take n (sub p x) ≡ take (f n) x
-sub-take p@(f ‼ _) x = f=S (λ n → take (f n) x)
+sub-take p@(f , _) x = f=S (λ n → take (f n) x)
 
 suc=tl : {A : Set} (as : Stream A) → sub picker-tl as ≡S tl as
 suc=tl {A} as = eqS (λ n → begin
@@ -98,10 +98,10 @@ suc=tl {A} as = eqS (λ n → begin
                              take n (tl as)
                            ∎) where open Eq.≡-Reasoning
 
-aᵢ<aᵢ₊₁⇒mono≤ : (pi@(f ‼ f-suc) : Picker)
+aᵢ<aᵢ₊₁⇒mono≤ : (pi@(f , f-suc) : Picker)
                -------------------------------------------
                → ∀ (p q : ℕ) → p ≤ q → f p ≤ f q
-aᵢ<aᵢ₊₁⇒mono≤ pi@(f ‼ f-suc)  p q x with q | ℕ.≤⇒≤′ x
+aᵢ<aᵢ₊₁⇒mono≤ pi@(f , f-suc)  p q x with q | ℕ.≤⇒≤′ x
 ... | .p | Data.Nat.≤′-refl = ℕ.≤-refl
 ... | (suc n) | Data.Nat.≤′-step r =
   begin
@@ -112,10 +112,10 @@ aᵢ<aᵢ₊₁⇒mono≤ pi@(f ‼ f-suc)  p q x with q | ℕ.≤⇒≤′ x
     f (suc n)
   ∎ where open ℕ.≤-Reasoning
 
-aᵢ<aᵢ₊₁⇒mono< : (pi@(f ‼ f-suc) : Picker)
+aᵢ<aᵢ₊₁⇒mono< : (pi@(f , f-suc) : Picker)
                -------------------------------------------
                → ∀ (p q : ℕ) → p < q → f p < f q
-aᵢ<aᵢ₊₁⇒mono< pi@(f ‼ f-suc) p (suc q) (s≤s x) =
+aᵢ<aᵢ₊₁⇒mono< pi@(f , f-suc) p (suc q) (s≤s x) =
   begin-strict
     f p
   ≤⟨ aᵢ<aᵢ₊₁⇒mono≤ pi p q x ⟩
@@ -124,7 +124,7 @@ aᵢ<aᵢ₊₁⇒mono< pi@(f ‼ f-suc) p (suc q) (s≤s x) =
     f (suc q)
   ∎ where open ℕ.≤-Reasoning
 
-n≤mono : (pi@(f ‼ f-suc) : Picker)
+n≤mono : (pi@(f , f-suc) : Picker)
          → ∀ (n : ℕ) → n ≤ f n
 n≤mono _ zero = z≤n
-n≤mono p@(_ ‼ f-suc) (suc n) = ℕ.≤-trans (s≤s (n≤mono p n)) (f-suc n)
+n≤mono p@(_ , f-suc) (suc n) = ℕ.≤-trans (s≤s (n≤mono p n)) (f-suc n)

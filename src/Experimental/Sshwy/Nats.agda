@@ -1,6 +1,6 @@
 {-# OPTIONS --guardedness #-}
 
-module Nats where
+module Experimental.Sshwy.Nats where
 
 open import Stream
 open import Stream.Properties using (f=S; _≡S_)

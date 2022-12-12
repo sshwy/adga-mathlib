@@ -8,6 +8,7 @@ import Data.Nat.Properties as ℕ
 -- infinite sequence
 record Stream (A : Set) : Set where
   coinductive
+  constructor _∷_
   field
     hd : A
     tl : Stream A
@@ -35,17 +36,19 @@ zipWith {A} {B} {C} f as bs =  cs where
   cs : Stream C
   hd cs = f (hd as) (hd bs)
   tl cs = zipWith f (tl as) (tl bs)
+  
 -- picker is a map to subsequence
 record Picker : Set where
-  constructor _‼_
+  constructor _,_
   field
-    map : ℕ → ℕ
-    isMono : ∀ (n : ℕ) → map n < map (suc n)
+    f : ℕ → ℕ
+    isMono : ∀ (n : ℕ) → f n < f (suc n)
+
 -- construct a subsequence by a picker
 sub : {A : Set} (pick : Picker) → Stream A → Stream A
-sub (f ‼ _) x = f→S (λ n → take (f n) x)
+sub (f , _) x = f→S (λ n → take (f n) x)
 
 -- the same as tl
 picker-tl : Picker
-Picker.map picker-tl x = suc x
+Picker.f picker-tl x = suc x
 Picker.isMono picker-tl n = Data.Nat.s≤s ℕ.≤-refl
