@@ -16,8 +16,8 @@ open import Data.Product using (∃; Σ; Σ-syntax; _,_; proj₁; proj₂)
 import Data.Integer.Base as ℤ 
 open ℚ.ℚ renaming (numerator to ↥_; denominator to ↧_)
 
-open import Stream using (Stream; take; repeat; zipWith)
-open import Stream.Properties using (zipWith-take; _≡S_)
+open import Ext.Stream using (Stream; take; repeat; zipWith)
+open import Ext.Stream.Properties using (zipWith-take; _≡S_)
 open import Experimental.Sshwy.RationalCauthy as RC using (Cauthy; _,_)
 
 ℝ : Set

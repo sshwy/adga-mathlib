@@ -1,6 +1,6 @@
 {-# OPTIONS --guardedness #-}
 
-module Stream.Properties where
+module Ext.Stream.Properties where
 
 open import Relation.Binary using (Rel; Reflexive; Symmetric; Transitive)
 open import Relation.Binary.Bundles using (Setoid)
@@ -9,8 +9,8 @@ open import Data.Nat using (ℕ; zero; suc; _<_; s≤s; z≤n; _≤_)
 import Data.Nat.Properties as ℕ
 import Relation.Binary.PropositionalEquality as Eq
 open Eq using (_≡_; refl; sym; trans; cong; cong-app)
-open import Stream.Base public
-open Stream.Base.Stream
+open import Ext.Stream.Base public
+open Ext.Stream.Base.Stream
 
 -- equality on stream
 data _≡S_ {A : Set} : Rel (Stream A) 0ℓ where

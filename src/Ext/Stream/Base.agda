@@ -1,6 +1,6 @@
 {-# OPTIONS --guardedness #-}
 
-module Stream.Base where
+module Ext.Stream.Base where
 
 open import Data.Nat using (ℕ; zero; suc; _<_)
 import Data.Nat.Properties as ℕ

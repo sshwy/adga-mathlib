@@ -1,4 +1,4 @@
-# adga-mathlib
+# agda-mathlib
 
 Try everying to define mathematical objects and proof theorems in agda.
 
@@ -8,7 +8,7 @@ Try everying to define mathematical objects and proof theorems in agda.
 
 目前这个仓库处在一个非常初始的阶段，所以你想写啥都可以：）
 
-仓库的结构很简单（目前还没有配 CI），src 目录下是 agda 的源文件。
+仓库的结构很简单（目前还没有配 CI），src 目录下是 agda 的源文件，为了避免与官方库的路径冲突，我们统一将实现放在 `src/Ext` 目录下。
 
 在提交你的贡献之前不妨先看看 agda 的 module system 以及 agda-stdlib 的组织结构。简单概括就是
 

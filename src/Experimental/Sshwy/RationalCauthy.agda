@@ -13,7 +13,7 @@ open Eq using (_≡_; refl; sym; trans; cong)
 -- import Data.Integer.Base as ℤ -- for better agda-mode output
 -- open ℚ renaming (numerator to ↥_; denominator to ↧_)
 
-open import Stream using (Stream; Picker; sub; take; repeat; const; _,_; _∷_)
+open import Ext.Stream using (Stream; Picker; sub; take; repeat; const; _,_; _∷_)
 
 
 Conv : Stream ℚ → Set
@@ -31,7 +31,7 @@ record Cauthy : Set where
 
 module _ where
   open Cauthy
-  open import Stream.Properties using (f=S; sub-take; n≤mono; aᵢ<aᵢ₊₁⇒mono<)
+  open import Ext.Stream.Properties using (f=S; sub-take; n≤mono; aᵢ<aᵢ₊₁⇒mono<)
   
   private
     lemma : (ε : ℚ) (ε-pos : Positive ε) (x : ℚ)

@@ -2,9 +2,9 @@
 
 module Experimental.Sshwy.Nats where
 
-open import Stream
-open import Stream.Properties using (f=S; _≡S_)
-open Stream.Stream
+open import Ext.Stream
+open import Ext.Stream.Properties using (f=S; _≡S_)
+open Ext.Stream.Stream
 
 open import Data.Nat using (ℕ; _+_; zero; suc)
 open import Data.Nat.Properties using (+-identityʳ; +-suc)
